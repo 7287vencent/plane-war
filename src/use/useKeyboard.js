@@ -11,7 +11,7 @@ export const useKeyboard = (map) => {
   }
   // 鼠标 抬起的 事件
   const handleKeyup = (e) => {
-    const callbackObj = mao[e.code]
+    const callbackObj = map[e.code]
     if (callbackObj && callbackObj.keyup) callbackObj.keyup(e)
   }
 
