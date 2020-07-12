@@ -71,44 +71,6 @@ const useCreatePlaneInfo = () => {
   return planeInfo
 }
 
-// 飞机移动的函数
-
-const useMovePlane = (initX, initY) => {
-  const speed = 15
-  const point = reactive({
-    x: initX,
-    y: initY
-  })
-
-  // 按键 需要销毁 在 生命周期中
-  const handleKeyDown = (e) => {
-    // console.log(e.code)
-
-    switch (e.code) {
-      case "ArrowUp":
-        point.y -= speed
-        break
-      case "ArrowDown":
-        point.y += speed
-        break
-      case "ArrowLeft":
-        point.x -= speed
-        break
-      case "ArrowRight":
-        point.x += speed
-        break
-    }
-  }
-
-  // 生命周期函数
-  onMounted(() => {
-    window.addEventListener("keydown", handleKeyDown)
-  })
-  onUnmounted(() => {
-    window.removeEventListener("keydown", handleKeyDown)
-  })
-  return toRefs(point)
-}
 
 // 子弹动起来的函数
 
