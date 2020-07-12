@@ -2,19 +2,22 @@ import { defineComponent, h, reactive, toRefs, onMounted, onUnmounted } from "@v
 import TWEEN from "@tweenjs/tween.js"
 import Map from "../component/Map"
 import Plane, { PlaneInfo } from "../component/Plane"
+import EnemyPlane, { EmemyPlaneInfo } from '../component/EnemyPlane'
 import { stage } from '../config/index'
 import Bullet from "../component/Bullet"
 import { useKeyboardMove } from '../use/index'
 import { getGame } from "../Game"
+import { moveEnemyPlane } from '../util/moveEnemyPlane'
 export default defineComponent({
   setup (props, ctx) {
     // 初始化 飞机的数据
-    const plane = useCreatePlaneInfo({
+    const selfPlane = useCreatePlaneInfo({
       x: stage.width / 2 - 60,
       y: stage.height,
       speed: 7
     })
-
+    // 创建 敌方 战机
+    const enemyPlanes = useEnemyPlanes();
     // 子弹的数据
     const bullets = reactive([])
 
@@ -24,36 +27,53 @@ export default defineComponent({
       bullets.push({ x: info.x + 100, y: info.y })
     }
 
+
+
     // 发射子弹 ，让子弹动起来
     getGame().ticker.add(() => {
-      moveBullets(bullets)
+      // moveBullets(bullets)
+      // moveEnemyPlane(enemyPlanes)
       // console.log(bullets.length);ç
 
     })
 
 
     return {
-      plane,
+      selfPlane,
+      enemyPlanes,
       bullets,
       handleAttack
     }
   },
   render (ctx) {
-
+    // 子弹的逻辑
     const renderBullets = () => {
       return ctx.bullets.map((info) => {
         return h(Bullet, { x: info.x, y: info.y })
       })
     }
 
+    // 创建敌方战机
+    const createEnemyPlane = (info, index) => {
+      return h(EnemyPlane, {
+        key: "EnemyPlane" + index,
+        x: info.x,
+        y: info.y,
+        height: info.height,
+        width: info.width,
+        // onAttack: ctx.handleEnemyPlaneAttack,
+      });
+    }
+
     return h("Container", [
       h(Map),
       h(Plane, {
-        x: ctx.plane.x,
-        y: ctx.plane.y,
+        x: ctx.selfPlane.x,
+        y: ctx.selfPlane.y,
         onAttack: ctx.handleAttack
       }),
-      ...renderBullets()
+      ...renderBullets(),
+      ...ctx.enemyPlanes.map(createEnemyPlane)
     ])
   }
 })
@@ -100,9 +120,32 @@ const useCreatePlaneInfo = ({ x, y, speed }) => {
   return selfPlane
 }
 
+// 创建 敌方战机
+const useEnemyPlanes = () => {
+  // 生产战机
+  const createEnemyPlaneData = (x) => {
+    return {
+      x,
+      y: 0,
+      width: EmemyPlaneInfo.width,
+      height: EmemyPlaneInfo.height,
+      life: EmemyPlaneInfo.life
+    }
+  }
+  const enemyInterval = 2000 // 战机创建的事件间隔
+  const enemyPlanes = reactive([]) // 存储所有的战机
+
+  // setInterval(() => {
+  // const x = Math.floor((1 + stage.width) * Math.random()); // 敌方战机的 初始化 地点
+  const x = 100
+  enemyPlanes.push(createEnemyPlaneData(x));
+  // }, enemyInterval)
+
+  return enemyPlanes
+
+}
 
 // 子弹动起来的函数
-
 const moveBullets = (bullets) => {
   const speed = 5
   bullets.forEach((bullet, index) => {
