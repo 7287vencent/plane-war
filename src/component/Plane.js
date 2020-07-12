@@ -2,6 +2,11 @@ import { defineComponent, h, toRefs, onMounted, onUnmounted, reactive } from "@v
 
 import planeImg from "../../assets/plane.png"
 
+export const PlaneInfo = {
+  width: 258,
+  height: 364
+}
+
 export default defineComponent({
   props: ["x", "y"],
 
