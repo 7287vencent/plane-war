@@ -1,5 +1,5 @@
 import { defineComponent, h, reactive, toRefs, onMounted, onUnmounted } from "@vue/runtime-core"
-
+import TWEEN from "@tweenjs/tween.js"
 import Map from "../component/Map"
 import plane from "../component/Plane"
 import Bullet from "../component/Bullet"
@@ -8,7 +8,7 @@ import { getGame } from "../Game"
 export default defineComponent({
   setup (props, ctx) {
     // 初始化 飞机的数据
-    const plane = useCreatePlaneInfo()
+    const plane = useCreatePlaneInfo({ x: 150, y: 1000, speed: 7 })
 
     // 子弹的数据
     const bullets = reactive([])
@@ -53,21 +53,44 @@ export default defineComponent({
   }
 })
 
-const useCreatePlaneInfo = () => {
+const useCreatePlaneInfo = ({ x, y, speed }) => {
   const planeInfo = reactive({
-    x: 150,
-    y: 150,
+    x: x,
+    y: y,
     width: 257,
     height: 364
   })
 
   // 让飞机 移动起来
-  const { x, y } = useKeyboardMove({ x: planeInfo.x, y: planeInfo.y, speed: 7 })
+  const { x: selfPlaneX, y: selfPlaneY } = useKeyboardMove({ x: planeInfo.x, y: planeInfo.y, speed: 7 })
 
-  // 让飞机开始进入的时候是 从底部缓缓进入
+  // 让飞机开始进入的时候是 从底部缓缓进入 利用 tween
+  // 缓动 入场
+  var tween = new TWEEN.Tween({
+    x,
+    y
+  }).to({ y: y - 550 }, 1000)
+    .start()
 
-  planeInfo.x = x
-  planeInfo.y = y
+  tween.onUpdate((obj) => {
+    planeInfo.x = obj.x
+    planeInfo.y = obj.y
+  })
+
+  const handleTicker = () => {
+    TWEEN.update()
+  }
+
+  onMounted(() => {
+    getGame().ticker.add(handleTicker)
+  })
+
+  onUnmounted(() => {
+    getGame().ticker.remove(handleTicker)
+  })
+
+  planeInfo.x = selfPlaneX
+  planeInfo.y = selfPlaneY
   return planeInfo
 }
 
