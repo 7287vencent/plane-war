@@ -3,7 +3,7 @@ import { defineComponent, h, reactive, toRefs, onMounted, onUnmounted } from "@v
 import Map from "../component/Map"
 import plane from "../component/Plane"
 import Bullet from "../component/Bullet"
-// import { useKeyboardMove } from '../use/index'
+import { useKeyboardMove } from '../use/index'
 import { getGame } from "../Game"
 export default defineComponent({
   setup (props, ctx) {
@@ -62,9 +62,7 @@ const useCreatePlaneInfo = () => {
   })
 
   // 让飞机 移动起来
-  // 
-  // useKeyboardMove({ x: planeInfo.x, y: planeInfo.y, speed: 7 })
-  const { x, y } = useMovePlane(planeInfo.x, planeInfo.y)
+  const { x, y } = useKeyboardMove({ x: planeInfo.x, y: planeInfo.y, speed: 7 })
 
   // 让飞机开始进入的时候是 从底部缓缓进入
 
