@@ -13,7 +13,7 @@ export default defineComponent({
   props: ["x", "y"],
 
   setup (props, ctx) {
-    console.log("plane props", props, ctx)
+    // console.log("plane props", props, ctx)
     // 为了防止 响应式数据丢失
     const { x, y } = toRefs(props)
     // console.log("x", x, y)

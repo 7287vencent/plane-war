@@ -10,6 +10,7 @@ import { getGame } from "../Game"
 import { moveEnemyPlane } from '../util/moveEnemyPlane'
 import { moveBullets } from '../util/moveBullets'
 import { hitTestRectangle } from '../util/hitTestRectangle'
+import { PAGE } from './index'
 const game = getGame()
 let hashCode = 0;
 const createHashCode = () => {
@@ -17,6 +18,7 @@ const createHashCode = () => {
 };
 
 export default defineComponent({
+  props: ["onNextPage"],
   setup (props, ctx) {
     // 初始化 飞机的数据
     const selfPlane = useCreatePlaneInfo({
@@ -49,11 +51,15 @@ export default defineComponent({
       enemyPlaneBullets.push({ x, y, id, width, height, rotation, dir });
     };
 
+    const handleGameOver = () => {
+      props.onNextPage(PAGE.end);
+    };
     useFighting({
       selfPlane,
       selfBullets,
       enemyPlanes,
-      enemyPlaneBullets
+      enemyPlaneBullets,
+      gameOverCallback: handleGameOver
     })
 
     return {
@@ -187,13 +193,14 @@ const useFighting = ({
   selfPlane,
   selfBullets,
   enemyPlanes,
-  enemyPlaneBullets
+  enemyPlaneBullets,
+  gameOverCallback
 }) => {
 
   const handleTicker = () => {
-    // moveBullets(selfBullets); // 我放 子弹 移动
-    // moveBullets(enemyPlaneBullets); // 敌方 子弹 移动
-    // moveEnemyPlane(enemyPlanes);  // 敌方飞机 移动
+    moveBullets(selfBullets); // 我放 子弹 移动
+    moveBullets(enemyPlaneBullets); // 敌方 子弹 移动
+    moveEnemyPlane(enemyPlanes);  // 敌方飞机 移动
 
     // 下面是碰撞检测 
     // 先检测，我方 子弹 和敌方子弹，飞机 是否有碰撞
@@ -231,7 +238,7 @@ const useFighting = ({
         // 直接 game over
         // 跳转到结束页面
         // console.log("游戏结束")
-        // gameOverCallback && gameOverCallback();
+        gameOverCallback && gameOverCallback();
       }
     };
 

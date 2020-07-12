@@ -1,5 +1,5 @@
 import { stage } from '../config/index'
-console.log("stage", stage)
+// console.log("stage", stage)
 export const moveEnemyPlane = (enemyPlans) => {
   // const speed = 1 // 飞机移
   enemyPlans.forEach((plane, index) => {

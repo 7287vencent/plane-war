@@ -29,9 +29,13 @@ const renderer = createRenderer({
         // 设置图片
         el.texture = Texture.from(nextValue);
         break;
-      case "onClick":
+      case "on":
         // pixi 给元素注册点击事件
-        el.on("pointertap", nextValue);
+        // el.on("pointertap", nextValue);
+        Object.keys(nextValue).forEach((eventName) => {
+          const callback = nextValue[eventName];
+          el.on(eventName, callback);
+        });
         break;
       default:
         el[key] = nextValue;
